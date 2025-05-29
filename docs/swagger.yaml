@@ -1,0 +1,12 @@
+info:
+  contact: {}
+paths:
+  /example/helloworld:
+    get:
+      responses:
+        "200":
+          description: helloworld
+          schema:
+            type: string
+      summary: ping example
+swagger: "2.0"

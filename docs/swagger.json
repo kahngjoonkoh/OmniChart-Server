@@ -1,0 +1,21 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/example/helloworld": {
+            "get": {
+                "summary": "ping example",
+                "responses": {
+                    "200": {
+                        "description": "helloworld",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
