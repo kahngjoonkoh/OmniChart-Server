@@ -1,0 +1,25 @@
+name: Deploy Go App
+
+on:
+  push:
+    branches:
+      - main  # trigger on pushes to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install Tsuru CLI
+      run: |
+        curl -fsSL "https://tsuru.io/get" | bash
+        tsuru target add impaas https://impaas.uk -s
+
+    - name: Deploy to Tsuru
+      env:
+        TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
+      run:
+        tsuru app deploy --app omnichart-server .
