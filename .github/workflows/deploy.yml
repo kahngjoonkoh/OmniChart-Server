@@ -20,6 +20,8 @@ jobs:
 
     - name: Deploy to Tsuru
       env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         TSURU_TOKEN: ${{ secrets.TSURU_TOKEN }}
       run:
         tsuru app deploy --app omnichart-server .
