@@ -1,12 +1,57 @@
+definitions:
+  models.Event:
+    properties:
+      content:
+        type: string
+      event_type_id:
+        type: integer
+      id:
+        type: string
+      source_url:
+        type: string
+      timestamp:
+        description: Use timestamptz in Postgres
+        type: string
+      title:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /example/helloworld:
+  /api/v1/events/{ticker}:
     get:
+      parameters:
+      - description: Ticker symbol
+        in: path
+        name: ticker
+        required: true
+        type: string
+      - description: Start time in RFC3339 format
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End time in RFC3339 format
+        in: query
+        name: to
+        required: true
+        type: string
+      - description: Maximum number of events to return
+        in: query
+        name: limit
+        required: true
+        type: integer
       responses:
         "200":
-          description: helloworld
+          description: OK
           schema:
-            type: string
-      summary: ping example
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Gets events for a given ticker and timeframe
 swagger: "2.0"
