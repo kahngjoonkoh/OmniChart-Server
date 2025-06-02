@@ -9,6 +9,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"omnichart-server/internal/handler"
+	"omnichart-server/internal/models"
 )
 
 // @BasePath /api/v1
@@ -19,6 +20,8 @@ func SetupRouter() *gin.Engine {
 
 	v1 := r.Group("/api/v1")
 	v1.GET("/events/:ticker", handler.GetEventsHandler)
+	v1.GET("/tags", models.GetTag)              // Landing page for all tags
+	v1.GET("/tags/:tag", models.GetStocksByTag) // Page for specific tag
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
