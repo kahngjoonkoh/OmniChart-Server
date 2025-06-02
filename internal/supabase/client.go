@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/supabase-community/postgrest-go"
 	"github.com/supabase-community/supabase-go"
-    "github.com/supabase-community/postgrest-go"
 
-    "omnichart-server/internal/models"
+	"omnichart-server/internal/models"
 )
 
 var Client *supabase.Client
@@ -33,34 +33,34 @@ func Init() {
 }
 
 func GetEvents(ticker string, from time.Time, to time.Time, limit int) ([]models.Event, error) {
-    var events []models.Event
+	var events []models.Event
 
-    fromStr := from.Format(time.RFC3339)
-    toStr := to.Format(time.RFC3339)
+	fromStr := from.Format(time.RFC3339)
+	toStr := to.Format(time.RFC3339)
 
-    orderOpts := &postgrest.OrderOpts{
-        Ascending: false,  // false for descending order
-    }
+	orderOpts := &postgrest.OrderOpts{
+		Ascending: false, // false for descending order
+	}
 
-    data, count, err := Client.From("ticker_event").
-        Select("event!inner(id,timestamp,title,source_url,content,event_type)", "exact", false).
-        Eq("ticker.ticker", ticker).
-        Gte("event.timestamp", fromStr).
-        Lte("event.timestamp", toStr).
-        Order("event.timestamp", orderOpts).
-        Limit(limit, "").Execute()
-    
-    if err != nil {
-        return nil, err
-    }
+	data, count, err := Client.From("ticker_event").
+		Select("event!inner(id,timestamp,title,source_url,content,event_type)", "exact", false).
+		Eq("ticker.ticker", ticker).
+		Gte("event.timestamp", fromStr).
+		Lte("event.timestamp", toStr).
+		Order("event.timestamp", orderOpts).
+		Limit(limit, "").Execute()
 
-    log.Println(data, count)
+	if err != nil {
+		return nil, err
+	}
 
-    // // extract events from results.
-    // events = make([]models.Event, count)
-    // for i, r := range data {
-    //     events[i] = r.Event
-    // }
+	log.Println(data, count)
 
-    return events, nil
+	// // extract events from results.
+	// events = make([]models.Event, count)
+	// for i, r := range data {
+	//     events[i] = r.Event
+	// }
+
+	return events, nil
 }
