@@ -14,5 +14,6 @@ check swaggerUI on the `/swagger/index.html` endpoint
 
 ## Deployment
 Check if environment variables are set on `tsuru env get -a omnichart-server`
+If not then set with `tsuru env set -a omnichart-server -p <KEY>=<VALUE>`
 
 [https://omnichart-server.impaas.uk/swagger/index.html](https://omnichart-server.impaas.uk/swagger/index.html)

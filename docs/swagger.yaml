@@ -18,7 +18,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/v1/events/{ticker}:
+  /events/{ticker}:
     get:
       parameters:
       - description: Ticker symbol
@@ -54,4 +54,38 @@ paths:
             additionalProperties: true
             type: object
       summary: Gets events for a given ticker and timeframe
+  /search:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of matching ticker objects whose name or symbol
+        contains the query string
+      parameters:
+      - description: Search query (e.g., part of a ticker symbol or company name)
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of matching ticker entries
+          schema:
+            additionalProperties:
+              items:
+                additionalProperties:
+                  type: string
+                type: object
+              type: array
+            type: object
+        "400":
+          description: Missing or invalid query parameter
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search for tickers by name or symbol
+      tags:
+      - search
 swagger: "2.0"
