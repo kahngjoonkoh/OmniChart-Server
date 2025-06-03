@@ -10,6 +10,9 @@ import (
 	"github.com/supabase-community/supabase-go"
 
 	"omnichart-server/internal/models"
+
+	"fmt"
+	"encoding/json"
 )
 
 var Client *supabase.Client
@@ -63,4 +66,67 @@ func GetEvents(ticker string, from time.Time, to time.Time, limit int) ([]models
 	// }
 
 	return events, nil
+}
+
+func GetSupabaseClient() *supabase.Client {
+	return Client
+}
+
+func AddComment(tickerEventID, userID, content string) (*models.Comment, error) {
+	client := GetSupabaseClient()
+
+	insert := map[string]interface{}{
+		"ticker_event_id": tickerEventID,
+		"user_id":         userID,
+		"content":         content,
+	}
+
+	resp, count, err := client.From("comments").Insert(insert, false, "", "representation", "").Execute()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+		return nil, fmt.Errorf("no rows inserted")
+	}
+
+	// Unmarshal resp (JSON) into []models.Comment
+	var inserted []models.Comment
+	err = json.Unmarshal(resp, &inserted)
+	if err != nil {
+		return nil, err
+	}
+
+	return &inserted[0], nil
+}
+
+func GetComments(tickerEventID string) ([]models.Comment, error) {
+	client := GetSupabaseClient()
+
+	// Compose order options for ascending order
+	orderOpts := &postgrest.OrderOpts{Ascending: true}
+
+	// Select params: columns, head ("" for no head), count (false)
+	resp, count, err := client.From("comments_with_usernames").
+		Select("id, user_id, username, ticker_event_id, content, created_at", "", false).
+		Eq("ticker_event_id", tickerEventID).
+		Order("created_at", orderOpts).
+		Execute()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+		return []models.Comment{}, nil
+	}
+
+	var comments []models.Comment
+	err = json.Unmarshal(resp, &comments)
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
 }

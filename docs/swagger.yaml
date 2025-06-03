@@ -1,4 +1,30 @@
 definitions:
+  handler.PostCommentRequest:
+    properties:
+      content:
+        example: This drop makes sense after Q2 miss.
+        type: string
+      ticker_event_id:
+        example: drop1
+        type: string
+      user_id:
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      ticker_event_id:
+        description: Check ticker and event to get proper comment seciton
+        type: string
+      user_id:
+        type: string
+    type: object
   models.Event:
     properties:
       content:
@@ -18,6 +44,75 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/comments:
+    post:
+      consumes:
+      - application/json
+      description: Inserts a comment for the given ticker event segment.
+      parameters:
+      - description: Comment payload
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new comment
+      tags:
+      - comments
+  /api/v1/comments/{tickerEventID}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all comments associated with a ticker event ID.
+      parameters:
+      - description: Ticker Event ID
+        in: path
+        name: tickerEventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List comments for an event
+      tags:
+      - comments
   /api/v1/events/{ticker}:
     get:
       parameters:
