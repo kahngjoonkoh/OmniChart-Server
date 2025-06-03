@@ -1,12 +1,14 @@
 package handler
 
 import (
+	// "log"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	// "omnichart-server/internal/supabase"
+	// "omnichart-server/internal/integration/marketdata"
 )
 
 // Mock database (replace with actual DB/logic)
@@ -28,19 +30,26 @@ var tickers = []map[string]string{
 // @Failure      400   {object}  map[string]string               "Missing or invalid query parameter"
 // @Router       /search [get]
 func GetSearchHandler(c *gin.Context) {
-	query := strings.ToLower(c.Query("q"))
+	query := strings.ToUpper(c.Query("q"))
 	if query == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing query parameter `q`"})
 		return
 	}
 
-	// Filter tickers
 	var results []map[string]string
+
+	// asset, err := marketdata.Client.GetAsset(query)
+	// if err != nil {
+	// 	log.Println(err, asset)
+	// }
+
+	// Filter tickers
+
 	for _, ticker := range tickers {
-		if strings.Contains(strings.ToLower(ticker["name"]), query) || strings.Contains(strings.ToLower(ticker["symbol"]), query) {
+		if strings.Contains(strings.ToLower(ticker["ticker"]), query) || strings.Contains(strings.ToLower(ticker["name"]), query) {
 			results = append(results, ticker)
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"results": results})
+	c.JSON(http.StatusOK, results)
 }

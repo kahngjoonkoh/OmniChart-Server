@@ -7,7 +7,7 @@ import (
 	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 )
 
-var AlpacaClient *alpaca.Client
+var Client *alpaca.Client
 
 func Init() {
 	apiKey := os.Getenv("APCA_API_KEY_ID")
@@ -33,6 +33,6 @@ func Init() {
 		log.Fatalf("Failed to authenticate with Alpaca API: %v", err)
 	}
 
-	AlpacaClient = client
+	Client = client
 	log.Println("Successfully initialized Alpaca client.")
 }
