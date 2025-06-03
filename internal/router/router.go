@@ -24,6 +24,7 @@ func SetupRouter() *gin.Engine {
 	v1.GET("/tags/:tag", models.GetStocksByTag) // Page for specific tag
 	v1.POST("/comments", handler.PostCommentHandler)
     v1.GET("/comments/:tickerEventID", handler.GetCommentsHandler)
+	v1.GET("/search", handler.GetSearchHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

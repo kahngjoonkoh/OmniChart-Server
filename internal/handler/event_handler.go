@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"omnichart-server/internal/supabase"
+	"omnichart-server/internal/integration/db"
 )
 
 // GetEventsHandler godoc
@@ -20,7 +20,7 @@ import (
 // @Param limit query int true "Maximum number of events to return"
 // @Success 200 {array} models.Event
 // @Failure 400 {object} map[string]interface{}
-// @Router /api/v1/events/{ticker} [get]
+// @Router /events/{ticker} [get]
 func GetEventsHandler(c *gin.Context) {
 	ticker := c.Param("ticker")
 	fromStr := c.Param("from")
@@ -48,7 +48,7 @@ func GetEventsHandler(c *gin.Context) {
         return
     }
 
-	events, err := supabase.GetEvents(ticker, from, to, limit)
+	events, err := db.GetEvents(ticker, from, to, limit)
 
 	// Serialize (marshal) to JSON
 	jsonData, err := json.Marshal(events)
