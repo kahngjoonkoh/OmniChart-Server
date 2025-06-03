@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/supabase-community/supabase-go"
     "github.com/supabase-community/postgrest-go"
 
@@ -15,7 +14,7 @@ import (
 var Client *supabase.Client
 
 func Init() {
-	err := godotenv.Load()
+    var err error
 
 	DB_URL := os.Getenv("SUPABASE_URL")
 	DB_KEY := os.Getenv("SUPABASE_ANON_KEY")

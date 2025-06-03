@@ -3,23 +3,25 @@ package marketdata
 import (
 	"log"
 	"os"
+	"fmt"
 
 	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
-	"github.com/joho/godotenv"
 )
 
 var AlpacaClient *alpaca.Client
 
 func Init() {
-	// Load .env variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found or failed to load; falling back to environment variables")
-	}
-
 	apiKey := os.Getenv("APCA_API_KEY_ID")
 	apiSecret := os.Getenv("APCA_API_SECRET_KEY")
 	baseURL := os.Getenv("APCA_API_BASE_URL") // Optional, defaults to paper trading
+
+	for _, e := range os.Environ() {
+        if len(e) > 20 {
+            fmt.Println(e[:20])
+        } else {
+            fmt.Println(e)
+        }
+    }
 
 	if apiKey == "" || apiSecret == "" {
 		log.Fatal("APCA_API_KEY_ID and APCA_API_SECRET_KEY must be set")

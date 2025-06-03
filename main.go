@@ -2,6 +2,9 @@ package main
 
 import (
    "os"
+   "log"
+
+	"github.com/joho/godotenv"
 
    "omnichart-server/internal/router"
    "omnichart-server/internal/integration/db"
@@ -10,6 +13,10 @@ import (
 
 
 func main() {
+   err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found or failed to load; falling back to environment variables")
+	}
    db.Init()
    marketdata.Init()
 
