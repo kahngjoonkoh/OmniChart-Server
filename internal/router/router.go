@@ -25,6 +25,8 @@ func SetupRouter() *gin.Engine {
 	v1.POST("/comments", handler.PostCommentHandler)
     v1.GET("/comments/:tickerEventID", handler.GetCommentsHandler)
 	v1.GET("/search", handler.GetSearchHandler)
+	v1.POST("/ticker_events", handler.PostTickerEventHandler)
+	v1.GET("/ticker_events/:ticker", handler.GetTickerEventsHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

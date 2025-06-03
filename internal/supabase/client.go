@@ -13,6 +13,7 @@ import (
 
 	"fmt"
 	"encoding/json"
+	"github.com/google/uuid"
 )
 
 var Client *supabase.Client
@@ -129,4 +130,63 @@ func GetComments(tickerEventID string) ([]models.Comment, error) {
 	}
 
 	return comments, nil
+}
+
+func AddTickerEvent(ticker string, eventID string, startIndex, endIndex int) (*models.TickerEvent, error) {
+	client := GetSupabaseClient()
+
+	// Convert eventID to uuid.UUID to validate format
+	eventUUID, err := uuid.Parse(eventID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid event ID format: %v", err)
+	}
+
+	insert := map[string]interface{}{
+		"ticker":      ticker,
+		"event_id":    eventUUID,
+		"start_index": startIndex,
+		"end_index":   endIndex,
+	}
+
+	resp, count, err := client.From("ticker_events").Insert(insert, false, "", "representation", "").Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+		return nil, fmt.Errorf("no rows inserted")
+	}
+
+	var inserted []models.TickerEvent
+	err = json.Unmarshal(resp, &inserted)
+	if err != nil {
+		return nil, err
+	}
+
+	return &inserted[0], nil
+}
+
+func GetTickerEvents(ticker string) ([]models.TickerEvent, error) {
+	client := GetSupabaseClient()
+
+	resp, count, err := client.From("ticker_events").
+		Select("id, ticker, event_id, start_index, end_index", "", false).
+		Eq("ticker", ticker).
+		Execute()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+		return []models.TickerEvent{}, nil
+	}
+
+	var tickerEvents []models.TickerEvent
+	err = json.Unmarshal(resp, &tickerEvents)
+	if err != nil {
+		return nil, err
+	}
+
+	return tickerEvents, nil
 }

@@ -11,6 +11,21 @@ definitions:
         example: d290f1ee-6c54-4b01-90e6-d701748f0851
         type: string
     type: object
+  handler.PostTickerEventRequest:
+    properties:
+      end_index:
+        example: 50
+        type: integer
+      event_id:
+        example: e7b8c6e5-3e44-4e2a-a6e7-123456789abc
+        type: string
+      start_index:
+        example: 0
+        type: integer
+      ticker:
+        example: AAPL
+        type: string
+    type: object
   models.Comment:
     properties:
       content:
@@ -39,6 +54,19 @@ definitions:
         description: Use timestamptz in Postgres
         type: string
       title:
+        type: string
+    type: object
+  models.TickerEvent:
+    properties:
+      end_index:
+        type: integer
+      event_id:
+        type: string
+      id:
+        type: string
+      start_index:
+        type: integer
+      ticker:
         type: string
     type: object
 info:
@@ -113,6 +141,75 @@ paths:
       summary: List comments for an event
       tags:
       - comments
+  /api/v1/ticker_events:
+    post:
+      consumes:
+      - application/json
+      description: Inserts a ticker event segment for a given ticker and event.
+      parameters:
+      - description: Ticker Event payload
+        in: body
+        name: tickerEvent
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostTickerEventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TickerEvent'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new ticker event segment
+      tags:
+      - ticker_events
+  /api/v1/ticker_events/{ticker}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all ticker event segments associated with a ticker symbol.
+      parameters:
+      - description: Ticker symbol
+        in: path
+        name: ticker
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TickerEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List ticker events for a ticker
+      tags:
+      - ticker_events
   /events/{ticker}:
     get:
       parameters:
