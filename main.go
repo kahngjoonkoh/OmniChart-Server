@@ -4,12 +4,14 @@ import (
    "os"
 
    "omnichart-server/internal/router"
-   "omnichart-server/internal/supabase"
+   "omnichart-server/internal/integration/db"
+   "omnichart-server/internal/integration/marketdata"
 )
 
 
 func main() {
-   supabase.Init()
+   db.Init()
+   marketdata.Init()
 
    r := router.SetupRouter()
 
