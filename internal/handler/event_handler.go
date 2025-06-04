@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"omnichart-server/internal/integration/db"
+	"omnichart-server/internal/supabase"
 )
 
 // GetEventsHandler godoc
@@ -48,7 +48,7 @@ func GetEventsHandler(c *gin.Context) {
         return
     }
 
-	events, err := db.GetEvents(ticker, from, to, limit)
+	events, _ := supabase.GetEvents(ticker, from, to, limit)
 
 	// Serialize (marshal) to JSON
 	jsonData, err := json.Marshal(events)
