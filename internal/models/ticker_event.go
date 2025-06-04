@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type TickerEvent struct {
 	ID      uuid.UUID    `json:"id"`
-	Ticker  Ticker `json:"ticker"`
+	Ticker  string `json:"ticker"`
 	EventId uuid.UUID    `json:"event_id"`
 	StartIndex int       `json:"start_index"`
 	EndIndex   int       `json:"end_index"`
