@@ -280,7 +280,7 @@ const docTemplate = `{
         },
         "/search": {
             "get": {
-                "description": "Returns a list of matching ticker objects whose name or symbol contains the query string",
+                "description": "Returns matching ticker objects whose symbol or company name contains the query string.",
                 "consumes": [
                     "application/json"
                 ],
@@ -290,11 +290,11 @@ const docTemplate = `{
                 "tags": [
                     "search"
                 ],
-                "summary": "Search for tickers by name or symbol",
+                "summary": "Search for tickers by symbol or company name",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Search query (e.g., part of a ticker symbol or company name)",
+                        "description": "Search query string (part of ticker symbol or company name)",
                         "name": "q",
                         "in": "query",
                         "required": true
@@ -302,22 +302,28 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of matching ticker entries",
+                        "description": "Search results grouped by type (e.g., stocks)",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
                                 "type": "array",
                                 "items": {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "type": "string"
-                                    }
+                                    "$ref": "#/definitions/models.Ticker"
                                 }
                             }
                         }
                     },
                     "400": {
                         "description": "Missing or invalid query parameter",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error (DB or API failure)",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -413,6 +419,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Ticker": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ticker": {
+                    "type": "string"
+                }
+            }
+        },
         "models.TickerEvent": {
             "type": "object",
             "properties": {
@@ -429,7 +446,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "ticker": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.Ticker"
                 }
             }
         }

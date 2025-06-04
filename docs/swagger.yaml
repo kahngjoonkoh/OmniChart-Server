@@ -56,6 +56,13 @@ definitions:
       title:
         type: string
     type: object
+  models.Ticker:
+    properties:
+      name:
+        type: string
+      ticker:
+        type: string
+    type: object
   models.TickerEvent:
     properties:
       end_index:
@@ -67,7 +74,7 @@ definitions:
       start_index:
         type: integer
       ticker:
-        type: string
+        $ref: '#/definitions/models.Ticker'
     type: object
 info:
   contact: {}
@@ -250,10 +257,10 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns a list of matching ticker objects whose name or symbol
-        contains the query string
+      description: Returns matching ticker objects whose symbol or company name contains
+        the query string.
       parameters:
-      - description: Search query (e.g., part of a ticker symbol or company name)
+      - description: Search query string (part of ticker symbol or company name)
         in: query
         name: q
         required: true
@@ -262,13 +269,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of matching ticker entries
+          description: Search results grouped by type (e.g., stocks)
           schema:
             additionalProperties:
               items:
-                additionalProperties:
-                  type: string
-                type: object
+                $ref: '#/definitions/models.Ticker'
               type: array
             type: object
         "400":
@@ -277,7 +282,13 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Search for tickers by name or symbol
+        "500":
+          description: Internal server error (DB or API failure)
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search for tickers by symbol or company name
       tags:
       - search
 swagger: "2.0"

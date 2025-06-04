@@ -1,3 +1,6 @@
 package models
 
-type Ticker string
+type Ticker struct {
+	Ticker string `json:"ticker"`
+	Name   string `json:"name"`
+}
