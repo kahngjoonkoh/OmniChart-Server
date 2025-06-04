@@ -3,7 +3,7 @@ package supabase
 import (
 	"log"
 	"os"
-	"time"
+	"sort"
 
 	"github.com/supabase-community/postgrest-go"
 	"github.com/supabase-community/supabase-go"
@@ -34,37 +34,31 @@ func Init() {
 	log.Println("Successfully Initialized Supabase client.")
 }
 
-func GetEvents(ticker string, from time.Time, to time.Time, limit int) ([]models.Event, error) {
-	var events []models.Event
+func GetEvents(ticker string) ([]models.TickerEvent, error) {
+	var results []models.TickerEvent
+	selectQuery := "id,ticker,event_id,start_index,end_index,events!inner(id,timestamp,title,source_url,content,event_types_id)"
 
-	fromStr := from.Format(time.RFC3339)
-	toStr := to.Format(time.RFC3339)
-
-	orderOpts := &postgrest.OrderOpts{
-		Ascending: false, // false for descending order
-	}
-
-	data, count, err := Client.From("ticker_event").
-		Select("event!inner(id,timestamp,title,source_url,content,event_type)", "exact", false).
-		Eq("ticker.ticker", ticker).
-		Gte("event.timestamp", fromStr).
-		Lte("event.timestamp", toStr).
-		Order("event.timestamp", orderOpts).
-		Limit(limit, "").Execute()
+	data, _, err := Client.From("ticker_event").
+		Select(selectQuery, "exact", false).
+		Eq("ticker", ticker).
+		Execute()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("supabase query error for ticker '%s': %w", ticker, err)
 	}
 
-	log.Println(data, count)
+	err = json.Unmarshal(data, &results)
+	
+	log.Println(results, err)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshaling Supabase data: %w", err)
+	}
 
-	// // extract events from results.
-	// events = make([]models.Event, count)
-	// for i, r := range data {
-	//     events[i] = r.Event
-	// }
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Event.Timestamp.After(results[j].Event.Timestamp) // Descending order
+	})
 
-	return events, nil
+	return results, nil
 }
 
 func GetSupabaseClient() *supabase.Client {

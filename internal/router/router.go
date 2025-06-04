@@ -20,7 +20,7 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://omnichart.impaas.uk"}, // change to your frontend URL in prod
+		AllowOrigins:     []string{"http://localhost:5173", "https://omnichart.impaas.uk"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -39,6 +39,8 @@ func SetupRouter() *gin.Engine {
 	v1.GET("/search", handler.GetSearchHandler)
 	v1.POST("/ticker_events", handler.PostTickerEventHandler)
 	v1.GET("/ticker_events/:ticker", handler.GetTickerEventsHandler)
+	v1.GET("/bars/:ticker", handler.GetHistoricalDataHandler)
+	// v1.GET("/bars/:ticker", handler.GetLiveDataHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

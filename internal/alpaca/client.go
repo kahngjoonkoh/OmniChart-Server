@@ -5,9 +5,11 @@ import (
 	"os"
 
 	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
+	"github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 )
 
 var Client *alpaca.Client
+var MarketData *marketdata.Client
 
 func Init() {
 	apiKey := os.Getenv("APCA_API_KEY_ID")
@@ -28,11 +30,19 @@ func Init() {
 		BaseURL:   baseURL,
 	})
 
+	marketData := marketdata.NewClient(marketdata.ClientOpts{
+		APIKey:    apiKey,
+		APISecret: apiSecret,
+		BaseURL:   "https://data.alpaca.markets",
+	})
+
+
 	// Check if the credentials are valid
 	if _, err := client.GetAccount(); err != nil {
 		log.Fatalf("Failed to authenticate with Alpaca API: %v", err)
 	}
 
 	Client = client
+	MarketData = marketData
 	log.Println("Successfully initialized Alpaca client.")
 }
