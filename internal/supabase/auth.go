@@ -4,7 +4,6 @@ import (
 	"strings"
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"github.com/supabase-community/gotrue-go/types"
 )
@@ -26,7 +25,6 @@ func SignUpUser(username, email, password string) error {
 	if err != nil {
 		// Retrieve message from error
 		msg := strings.ReplaceAll(err.Error(), "msg", "message")
-		fmt.Println(msg)
 		index := strings.Index(msg, "{")
 		var supaErr SupabaseError
 		// Return raw error if json parsing fails
