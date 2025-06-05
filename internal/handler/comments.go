@@ -27,6 +27,8 @@ type PostCommentRequest struct {
 // @Failure      500      {object}  map[string]string
 // @Router       /comments [post]
 func PostCommentHandler(c *gin.Context) {
+	fmt.Println("START")
+
 	var req PostCommentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -35,11 +37,14 @@ func PostCommentHandler(c *gin.Context) {
 
 	comment, err := supabase.AddComment(req.TickerEventID, req.UserID, req.Content)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to post comment"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "failed to post comment",
+			"details": err.Error(), // optional, remove in production
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, comment)
+	c.JSON(http.StatusCreated, comment)
 }
 
 // @Summary      List comments for an event

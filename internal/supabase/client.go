@@ -65,30 +65,33 @@ func GetSupabaseClient() *supabase.Client {
 	return Client
 }
 
-func AddComment(tickerEventID, userID, content string) (*models.Comment, error) {
+func AddComment(tickerEventID string, userID string, content string) (*models.Comment, error) {
 	client := GetSupabaseClient()
 
 	insert := map[string]interface{}{
+		"content":         content,
 		"ticker_event_id": tickerEventID,
 		"user_id":         userID,
-		"content":         content,
 	}
 
-	resp, count, err := client.From("comments").Insert(insert, false, "", "representation", "").Execute()
+	fmt.Println("Inserting comment into Supabase...")
+
+	resp, _, err := client.
+		From("comments").
+		Insert(insert, false, "representation", "", "").Execute()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if count == 0 {
-		return nil, fmt.Errorf("no rows inserted")
-	}
-
-	// Unmarshal resp (JSON) into []models.Comment
 	var inserted []models.Comment
 	err = json.Unmarshal(resp, &inserted)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(inserted) == 0 {
+		return nil, fmt.Errorf("no rows inserted")
 	}
 
 	return &inserted[0], nil
