@@ -34,7 +34,7 @@ func GetSearchHandler(c *gin.Context) {
 
 	data, _, err := supabase.Client.From("tickers").
 		Select("*", "", false).
-		Or(fmt.Sprintf("ticker.ilike.*%s*,name.ilike.*%s", query, query), "").
+		Or(fmt.Sprintf("ticker.ilike.*%s*,name.ilike.*%s*", query, query), "").
 		Execute()
 
 	if err != nil {
