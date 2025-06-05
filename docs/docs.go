@@ -15,111 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/comments": {
-            "post": {
-                "description": "Inserts a comment for the given ticker event segment.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "comments"
-                ],
-                "summary": "Add a new comment",
-                "parameters": [
-                    {
-                        "description": "Comment payload",
-                        "name": "comment",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.PostCommentRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Comment"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/comments/{tickerEventID}": {
-            "get": {
-                "description": "Returns all comments associated with a ticker event ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "comments"
-                ],
-                "summary": "List comments for an event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ticker Event ID",
-                        "name": "tickerEventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Comment"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/ticker_events": {
             "post": {
                 "description": "Inserts a ticker event segment for a given ticker and event.",
@@ -225,7 +120,112 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/{ticker}": {
+        "/comments": {
+            "post": {
+                "description": "Inserts a comment for the given ticker event segment.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Add a new comment",
+                "parameters": [
+                    {
+                        "description": "Comment payload",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.PostCommentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/comments/{tickerEventID}": {
+            "get": {
+                "description": "Returns all comments associated with a ticker event ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "comments"
+                ],
+                "summary": "List comments for an event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticker Event ID",
+                        "name": "tickerEventID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Comment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{event_id}": {
             "get": {
                 "summary": "Gets events for a given ticker and timeframe",
                 "parameters": [
@@ -441,7 +441,10 @@ const docTemplate = `{
                 "content": {
                     "type": "string"
                 },
-                "event_type_id": {
+                "event_type": {
+                    "$ref": "#/definitions/models.EventType"
+                },
+                "event_types_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -455,6 +458,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EventType": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -479,6 +499,14 @@ const docTemplate = `{
                 "event_id": {
                     "type": "string"
                 },
+                "events": {
+                    "description": "optional: populated if joined",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Event"
+                        }
+                    ]
+                },
                 "id": {
                     "type": "string"
                 },
@@ -486,7 +514,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "ticker": {
-                    "$ref": "#/definitions/models.Ticker"
+                    "type": "string"
                 }
             }
         },

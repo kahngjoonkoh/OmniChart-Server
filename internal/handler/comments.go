@@ -25,7 +25,7 @@ type PostCommentRequest struct {
 // @Success      200      {object}  models.Comment
 // @Failure      400      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
-// @Router       /api/v1/comments [post]
+// @Router       /comments [post]
 func PostCommentHandler(c *gin.Context) {
 	var req PostCommentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -51,7 +51,7 @@ func PostCommentHandler(c *gin.Context) {
 // @Success      200            {array}   models.Comment
 // @Failure      400            {object}  map[string]string
 // @Failure      500            {object}  map[string]string
-// @Router       /api/v1/comments/{tickerEventID} [get]
+// @Router       /comments/{tickerEventID} [get]
 func GetCommentsHandler(c *gin.Context) {
 	tickerEventID := c.Param("tickerEventID")
 	if tickerEventID == "" {

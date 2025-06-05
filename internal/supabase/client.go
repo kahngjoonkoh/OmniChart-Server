@@ -101,10 +101,10 @@ func GetComments(tickerEventID string) ([]models.Comment, error) {
 	orderOpts := &postgrest.OrderOpts{Ascending: true}
 
 	// Select params: columns, head ("" for no head), count (false)
-	resp, count, err := client.From("comments_with_usernames").
-		Select("id, user_id, username, ticker_event_id, content, created_at", "", false).
+	resp, count, err := client.From("comments").
+		Select("*", "exact", false).
 		Eq("ticker_event_id", tickerEventID).
-		Order("created_at", orderOpts).
+		Order("timestamp", orderOpts).
 		Execute()
 
 	if err != nil {
