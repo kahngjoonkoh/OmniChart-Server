@@ -34,7 +34,7 @@ func GetSearchHandler(c *gin.Context) {
 
 	data, _, err := supabase.Client.From("tickers").
 		Select("*", "", false).
-		Or(fmt.Sprintf("ticker.ilike.*%s*,name.ilike.*%s*", query, query), "").
+		Or(fmt.Sprintf("ticker.ilike.%s*,name.ilike.*%s*", query, query), "").
 		Execute()
 
 	if err != nil {
@@ -47,7 +47,6 @@ func GetSearchHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unmarshal Error. Received incorrect datatype"})
 		return
 	}
-	log.Println(tickers)
 
 	if len(tickers) == 0 {
 		log.Println("No ticker found. Searching Alpaca API")
@@ -74,8 +73,18 @@ func GetSearchHandler(c *gin.Context) {
 
 	filteredStocks := make([]models.Ticker, 0)
 
+
+	has_ticker_result := false
+
 	for _, ticker := range tickers {
-		if strings.Contains(ticker.Ticker, query) || strings.Contains(strings.ToUpper(ticker.Name), query) {
+		if strings.HasPrefix(ticker.Ticker, query) {
+			filteredStocks = append(filteredStocks, ticker)
+			has_ticker_result = true
+		}
+	}
+
+	for _, ticker := range tickers {
+		if !has_ticker_result && strings.Contains(strings.ToUpper(ticker.Name), query) {
 			filteredStocks = append(filteredStocks, ticker)
 		}
 	}
