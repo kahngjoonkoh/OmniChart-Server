@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 
@@ -31,8 +32,9 @@ func GetSearchHandler(c *gin.Context) {
 		return
 	}
 
-	data, _, err := supabase.Client.From("tickers").Select("*", "", false).
-		Eq("ticker", query).
+	data, _, err := supabase.Client.From("tickers").
+		Select("*", "", false).
+		Or(fmt.Sprintf("ticker.ilike.*%s*,name.ilike.*%s", query, query), "").
 		Execute()
 
 	if err != nil {
@@ -45,6 +47,7 @@ func GetSearchHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unmarshal Error. Received incorrect datatype"})
 		return
 	}
+	log.Println(tickers)
 
 	if len(tickers) == 0 {
 		log.Println("No ticker found. Searching Alpaca API")
