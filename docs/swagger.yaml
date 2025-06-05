@@ -15,6 +15,11 @@ definitions:
       title:
         type: string
     type: object
+  models.UserInfo:
+    properties:
+      username:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -54,4 +59,30 @@ paths:
             additionalProperties: true
             type: object
       summary: Gets events for a given ticker and timeframe
+  /signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Signup data
+        in: body
+        name: signup
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserInfo'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Sign up a new user account
 swagger: "2.0"
