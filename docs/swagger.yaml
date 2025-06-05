@@ -1,4 +1,45 @@
 definitions:
+  handler.PostCommentRequest:
+    properties:
+      content:
+        example: This drop makes sense after Q2 miss.
+        type: string
+      ticker_event_id:
+        example: drop1
+        type: string
+      user_id:
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type: string
+    type: object
+  handler.PostTickerEventRequest:
+    properties:
+      end_index:
+        example: 50
+        type: integer
+      event_id:
+        example: e7b8c6e5-3e44-4e2a-a6e7-123456789abc
+        type: string
+      start_index:
+        example: 0
+        type: integer
+      ticker:
+        example: AAPL
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      ticker_event_id:
+        description: Check ticker and event to get proper comment seciton
+        type: string
+      user_id:
+        type: string
+    type: object
   models.Event:
     properties:
       content:
@@ -15,6 +56,26 @@ definitions:
       title:
         type: string
     type: object
+  models.Ticker:
+    properties:
+      name:
+        type: string
+      ticker:
+        type: string
+    type: object
+  models.TickerEvent:
+    properties:
+      end_index:
+        type: integer
+      event_id:
+        type: string
+      id:
+        type: string
+      start_index:
+        type: integer
+      ticker:
+        $ref: '#/definitions/models.Ticker'
+    type: object
   models.UserInfo:
     properties:
       username:
@@ -23,7 +84,145 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/v1/events/{ticker}:
+  /api/v1/comments:
+    post:
+      consumes:
+      - application/json
+      description: Inserts a comment for the given ticker event segment.
+      parameters:
+      - description: Comment payload
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new comment
+      tags:
+      - comments
+  /api/v1/comments/{tickerEventID}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all comments associated with a ticker event ID.
+      parameters:
+      - description: Ticker Event ID
+        in: path
+        name: tickerEventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List comments for an event
+      tags:
+      - comments
+  /api/v1/ticker_events:
+    post:
+      consumes:
+      - application/json
+      description: Inserts a ticker event segment for a given ticker and event.
+      parameters:
+      - description: Ticker Event payload
+        in: body
+        name: tickerEvent
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostTickerEventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TickerEvent'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new ticker event segment
+      tags:
+      - ticker_events
+  /api/v1/ticker_events/{ticker}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all ticker event segments associated with a ticker symbol.
+      parameters:
+      - description: Ticker symbol
+        in: path
+        name: ticker
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TickerEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List ticker events for a ticker
+      tags:
+      - ticker_events
+  /events/{ticker}:
     get:
       parameters:
       - description: Ticker symbol
@@ -59,6 +258,44 @@ paths:
             additionalProperties: true
             type: object
       summary: Gets events for a given ticker and timeframe
+  /search:
+    get:
+      consumes:
+      - application/json
+      description: Returns matching ticker objects whose symbol or company name contains
+        the query string.
+      parameters:
+      - description: Search query string (part of ticker symbol or company name)
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Search results grouped by type (e.g., stocks)
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/models.Ticker'
+              type: array
+            type: object
+        "400":
+          description: Missing or invalid query parameter
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error (DB or API failure)
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search for tickers by symbol or company name
+      tags:
+      - search
   /signup:
     post:
       consumes:
