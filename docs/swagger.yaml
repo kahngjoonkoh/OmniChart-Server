@@ -105,75 +105,6 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/v1/comments:
-    post:
-      consumes:
-      - application/json
-      description: Inserts a comment for the given ticker event segment.
-      parameters:
-      - description: Comment payload
-        in: body
-        name: comment
-        required: true
-        schema:
-          $ref: '#/definitions/handler.PostCommentRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Comment'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Add a new comment
-      tags:
-      - comments
-  /api/v1/comments/{tickerEventID}:
-    get:
-      consumes:
-      - application/json
-      description: Returns all comments associated with a ticker event ID.
-      parameters:
-      - description: Ticker Event ID
-        in: path
-        name: tickerEventID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Comment'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: List comments for an event
-      tags:
-      - comments
   /api/v1/ticker_events:
     post:
       consumes:
@@ -243,6 +174,75 @@ paths:
       summary: List ticker events for a ticker
       tags:
       - ticker_events
+  /comments:
+    post:
+      consumes:
+      - application/json
+      description: Inserts a comment for the given ticker event segment.
+      parameters:
+      - description: Comment payload
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new comment
+      tags:
+      - comments
+  /comments/{tickerEventID}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all comments associated with a ticker event ID.
+      parameters:
+      - description: Ticker Event ID
+        in: path
+        name: tickerEventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List comments for an event
+      tags:
+      - comments
   /events/{event_id}:
     get:
       parameters:

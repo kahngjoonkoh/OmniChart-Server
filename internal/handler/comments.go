@@ -4,6 +4,7 @@ package handler
 
 import (
 	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"omnichart-server/internal/supabase"
@@ -25,8 +26,10 @@ type PostCommentRequest struct {
 // @Success      200      {object}  models.Comment
 // @Failure      400      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
-// @Router       /api/v1/comments [post]
+// @Router       /comments [post]
 func PostCommentHandler(c *gin.Context) {
+	fmt.Println("START")
+
 	var req PostCommentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -35,11 +38,14 @@ func PostCommentHandler(c *gin.Context) {
 
 	comment, err := supabase.AddComment(req.TickerEventID, req.UserID, req.Content)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to post comment"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "failed to post comment",
+			"details": err.Error(), // optional, remove in production
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, comment)
+	c.JSON(http.StatusCreated, comment)
 }
 
 // @Summary      List comments for an event
@@ -51,7 +57,7 @@ func PostCommentHandler(c *gin.Context) {
 // @Success      200            {array}   models.Comment
 // @Failure      400            {object}  map[string]string
 // @Failure      500            {object}  map[string]string
-// @Router       /api/v1/comments/{tickerEventID} [get]
+// @Router       /comments/{tickerEventID} [get]
 func GetCommentsHandler(c *gin.Context) {
 	tickerEventID := c.Param("tickerEventID")
 	if tickerEventID == "" {
