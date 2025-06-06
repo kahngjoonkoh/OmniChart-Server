@@ -44,7 +44,9 @@ definitions:
     properties:
       content:
         type: string
-      event_type_id:
+      event_type:
+        $ref: '#/definitions/models.EventType'
+      event_types_id:
         type: integer
       id:
         type: string
@@ -54,6 +56,17 @@ definitions:
         description: Use timestamptz in Postgres
         type: string
       title:
+        type: string
+    type: object
+  models.EventType:
+    properties:
+      category_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      type:
         type: string
     type: object
   models.Ticker:
@@ -69,15 +82,23 @@ definitions:
         type: integer
       event_id:
         type: string
+      events:
+        allOf:
+        - $ref: '#/definitions/models.Event'
+        description: 'optional: populated if joined'
       id:
         type: string
       start_index:
         type: integer
       ticker:
-        $ref: '#/definitions/models.Ticker'
+        type: string
     type: object
   models.UserInfo:
     properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
       username:
         type: string
     type: object
@@ -222,7 +243,7 @@ paths:
       summary: List ticker events for a ticker
       tags:
       - ticker_events
-  /events/{ticker}:
+  /events/{event_id}:
     get:
       parameters:
       - description: Ticker symbol
@@ -258,6 +279,43 @@ paths:
             additionalProperties: true
             type: object
       summary: Gets events for a given ticker and timeframe
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Username and password
+        in: body
+        name: login
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserInfo'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login a user
+  /logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Log out a user
   /search:
     get:
       consumes:
@@ -301,7 +359,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Signup data
+      - description: Username, email and password
         in: body
         name: signup
         required: true

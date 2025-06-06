@@ -225,7 +225,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/{ticker}": {
+        "/events/{event_id}": {
             "get": {
                 "summary": "Gets events for a given ticker and timeframe",
                 "parameters": [
@@ -270,6 +270,63 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Login a user",
+                "parameters": [
+                    {
+                        "description": "Username and password",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.UserInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Log out a user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -345,7 +402,7 @@ const docTemplate = `{
                 "summary": "Sign up a new user account",
                 "parameters": [
                     {
-                        "description": "Signup data",
+                        "description": "Username, email and password",
                         "name": "signup",
                         "in": "body",
                         "required": true,
@@ -441,7 +498,10 @@ const docTemplate = `{
                 "content": {
                     "type": "string"
                 },
-                "event_type_id": {
+                "event_type": {
+                    "$ref": "#/definitions/models.EventType"
+                },
+                "event_types_id": {
                     "type": "integer"
                 },
                 "id": {
@@ -455,6 +515,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EventType": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -479,6 +556,14 @@ const docTemplate = `{
                 "event_id": {
                     "type": "string"
                 },
+                "events": {
+                    "description": "optional: populated if joined",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Event"
+                        }
+                    ]
+                },
                 "id": {
                     "type": "string"
                 },
@@ -486,13 +571,19 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "ticker": {
-                    "$ref": "#/definitions/models.Ticker"
+                    "type": "string"
                 }
             }
         },
         "models.UserInfo": {
             "type": "object",
             "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }
