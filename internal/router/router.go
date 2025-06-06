@@ -20,7 +20,7 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://omnichart.impaas.uk"},
+		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173", "https://omnichart.impaas.uk"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -42,6 +42,8 @@ func SetupRouter() *gin.Engine {
 	v1.GET("/bars/:ticker", handler.GetHistoricalDataHandler)
 	// v1.GET("/bars/:ticker", handler.GetLiveDataHandler)
 	v1.POST("/signup", handler.SignUpHandler) // User sign up
+	v1.POST("/login", handler.LoginHandler) // User login
+	v1.POST("/logout", handler.LogoutHandler) // User logout
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
