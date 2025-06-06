@@ -38,7 +38,7 @@ func GetSearchHandler(c *gin.Context) {
 		Execute()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch from DB"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch from DB", "detail": err.Error()})
 		return
 	}
 
