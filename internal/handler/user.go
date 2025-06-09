@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"omnichart-server/internal/models"
 	"omnichart-server/internal/supabase"
@@ -73,8 +74,11 @@ func LoginHandler(c *gin.Context) {
 func LogoutHandler(c *gin.Context) {
 	err := supabase.LogoutUser()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		msg := err.Error()
+		if !strings.Contains(msg, "This endpoint requires a Bearer token") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 	}
 	c.JSON(http.StatusOK, map[string]interface{}{})
 }
