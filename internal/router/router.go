@@ -43,7 +43,9 @@ func SetupRouter() *gin.Engine {
 	// v1.GET("/bars/:ticker", handler.GetLiveDataHandler)
 	v1.POST("/signup", handler.SignUpHandler) // User sign up
 	v1.POST("/login", handler.LoginHandler) // User login
-	v1.POST("/logout", handler.LogoutHandler) // User logout
+	v1.POST("/logout", handler.LogoutHandler) // User logout#
+
+	v1.GET("/beta/:ticker", handler.GetBetaHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

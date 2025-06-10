@@ -4,8 +4,6 @@ package handler
 
 import (
 	"net/http"
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"omnichart-server/internal/supabase"
 )
