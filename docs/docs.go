@@ -430,6 +430,78 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/watchlist": {
+            "get": {
+                "summary": "Retrieve the tickers from current user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Access token",
+                        "name": "token",
+                        "in": "header"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/watchlist/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a new ticker to current user's watchlist",
+                "parameters": [
+                    {
+                        "description": "Ticker",
+                        "name": "ticker",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Access token",
+                        "name": "token",
+                        "in": "header"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/watchlist/remove": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a new ticker to current user's watchlist",
+                "parameters": [
+                    {
+                        "description": "Ticker",
+                        "name": "ticker",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Access token",
+                        "name": "token",
+                        "in": "header"
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {

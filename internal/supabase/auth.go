@@ -83,6 +83,7 @@ func LoginUser(username, password string) (string, string, error) {
 		fmt.Println(err.Error())
 		return "", "", err
 	}
+	Client.EnableTokenAutoRefresh(session)
 	return session.AccessToken, session.RefreshToken, nil
 }
 
