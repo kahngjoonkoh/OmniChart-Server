@@ -74,8 +74,6 @@ func AddComment(tickerEventID string, userID string, content string) (*models.Co
 		"user_id":         userID,
 	}
 
-	fmt.Println("Inserting comment into Supabase...")
-
 	resp, _, err := client.
 		From("comments").
 		Insert(insert, false, "representation", "", "").Execute()

@@ -4,8 +4,6 @@ package handler
 
 import (
 	"net/http"
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"omnichart-server/internal/supabase"
 )
@@ -28,8 +26,6 @@ type PostCommentRequest struct {
 // @Failure      500      {object}  map[string]string
 // @Router       /comments [post]
 func PostCommentHandler(c *gin.Context) {
-	fmt.Println("START")
-
 	var req PostCommentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
