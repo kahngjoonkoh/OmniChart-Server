@@ -380,4 +380,51 @@ paths:
             additionalProperties: true
             type: object
       summary: Sign up a new user account
+  /watchlist:
+    get:
+      parameters:
+      - description: Access token
+        in: header
+        name: token
+        type: string
+      responses: {}
+      summary: Retrieve the tickers from current user's watchlist
+  /watchlist/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Ticker
+        in: body
+        name: ticker
+        required: true
+        schema:
+          type: object
+      - description: Access token
+        in: header
+        name: token
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Add a new ticker to current user's watchlist
+  /watchlist/remove:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Ticker
+        in: body
+        name: ticker
+        required: true
+        schema:
+          type: object
+      - description: Access token
+        in: header
+        name: token
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Add a new ticker to current user's watchlist
 swagger: "2.0"
