@@ -61,8 +61,8 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.UserInfo{
-		Username: req.Username,
-		AccessToken: accessToken,
+		Username:     req.Username,
+		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	})
 }

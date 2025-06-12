@@ -36,7 +36,6 @@ func Init() {
 		BaseURL:   "https://data.alpaca.markets",
 	})
 
-
 	// Check if the credentials are valid
 	if _, err := client.GetAccount(); err != nil {
 		log.Fatalf("Failed to authenticate with Alpaca API: %v", err)

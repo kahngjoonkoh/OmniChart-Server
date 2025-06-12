@@ -1,22 +1,22 @@
 package supabase
 
 import (
-	"strings"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/supabase-community/gotrue-go/types"
 )
 
 type SupabaseError struct {
-	Message	  string	`json:"message"`
+	Message string `json:"message"`
 }
 
 // Create a new user and corresponding profile given username, email and password
 func SignUpUser(username, email, password string) error {
 	req := types.SignupRequest{
-		Email: email,
+		Email:    email,
 		Password: password,
 		Data: map[string]interface{}{
 			"username": username,
@@ -47,7 +47,7 @@ func SignUpUser(username, email, password string) error {
 }
 
 type EmailResponse struct {
-	Email	string	`json:"email"`
+	Email string `json:"email"`
 }
 
 // Login a user given username and password
@@ -65,7 +65,7 @@ func LoginUser(username, password string) (string, string, error) {
 		}
 		return "", "", err
 	}
-	
+
 	// Retrieve email from the response
 	var email EmailResponse
 	err = json.Unmarshal(resp, &email)

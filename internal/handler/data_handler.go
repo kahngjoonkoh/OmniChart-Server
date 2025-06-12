@@ -17,14 +17,14 @@ func GetHistoricalDataHandler(c *gin.Context) {
 
 	data, err := alpacaApi.MarketData.GetBars(ticker, marketdata.GetBarsRequest{
 		TimeFrame: marketdata.OneDay,
-		Start: time.Now().AddDate(0, -6, 0),
+		Start:     time.Now().AddDate(0, -6, 0),
 	})
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error Fetching Historical Bars."})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, data)
 }
 

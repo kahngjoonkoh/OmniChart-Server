@@ -10,15 +10,15 @@ import (
 
 	"omnichart-server/internal/models"
 
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 )
 
 var Client *supabase.Client
 
 func Init() {
-    var err error
+	var err error
 
 	DB_URL := os.Getenv("SUPABASE_URL")
 	DB_KEY := os.Getenv("SUPABASE_ANON_KEY")
@@ -48,7 +48,7 @@ func GetEvents(ticker string) ([]models.TickerEvent, error) {
 	}
 
 	err = json.Unmarshal(data, &results)
-	
+
 	log.Println(results, err)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling Supabase data: %w", err)
