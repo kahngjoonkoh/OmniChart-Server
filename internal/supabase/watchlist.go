@@ -2,37 +2,52 @@ package supabase
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 
 	"omnichart-server/internal/models"
 )
 
 // Add a ticker to user's watchlist
 // Require an authenticated user to perform this action
-func AddTickerToWatchlist(ticker string) error {
+func AddTickerToWatchlist(token, ticker string) error {
 	// Ensure the current user is authenticated
-	resp, _ := Client.Auth.GetUser()
-	if resp == nil {
-		return errors.New("User not logged in")
+	client := Client.Auth.WithToken(token)
+	resp, err := client.GetUser()
+	if err != nil {
+		return fmt.Errorf("failed to authenticate user")
+	}
+
+	// Ensure there is no existing entry
+	inWatchlist, err := TickerInWatchlist(token, ticker)
+	if err != nil {
+		return fmt.Errorf("failed to fetch watchlist")
+	} else if inWatchlist {
+		return fmt.Errorf("%s already in watchlist", ticker)
 	}
 
 	// Insert new entry to watchlists table
 	req := map[string]interface{}{
-		"ticker": ticker,
+		"user_id"	: resp.User.ID.String(),
+		"ticker"	: ticker,
 	}
-	_, _, err := Client.From("watchlists").
+	_, _, err = Client.From("watchlists").
 		Insert(req, false, "ignore", "", "").
 		Execute()
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to add %s to watchlist", ticker)
+	}
+	return nil
 }
 
 // Retrieve the tickers in user's watchlist
 // Require an authenticated user to perform this action
-func GetWatchlist() ([]string, error) {
-	// Ensure the current user is authenticated
-	userResp, _ := Client.Auth.GetUser()
-	if userResp == nil {
-		return nil, errors.New("User not logged in")
+func GetWatchlist(token string) ([]string, error) {
+	// Fetch the authenticated user
+	client := Client.Auth.WithToken(token)
+	userResp, err := client.GetUser()
+	if err != nil {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to authenticate user")
 	}
 
 	// Look up tickers in user's watchlist
@@ -57,13 +72,14 @@ func GetWatchlist() ([]string, error) {
 	return tickers, nil
 }
 
-// Delete a ticker from user's watchlist
+// Remove a ticker from user's watchlist
 // Require an authenticated user to perform this action
-func DeleteTickerFromWatchlist(ticker string) error {
+func RemoveTickerFromWatchlist(token, ticker string) error {
 	// Ensure the current user is authenticated
-	resp, _ := Client.Auth.GetUser()
-	if resp == nil {
-		return errors.New("User not logged in")
+	client := Client.Auth.WithToken(token)
+	resp, err := client.GetUser()
+	if err != nil {
+		return fmt.Errorf("failed to authenticate user")
 	}
 
 	// Delete the relevant entry from watchlists table
@@ -73,9 +89,30 @@ func DeleteTickerFromWatchlist(ticker string) error {
 		Eq("ticker", ticker).
 		Execute()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to remove %s from watchlist", ticker)
 	} else if count == 0 {
-		return errors.New("Ticker not in user's watchlist")
+		return fmt.Errorf("%s not in user's watchlist", ticker)
 	}
-	return err
+	return nil
+}
+
+// Check whether a ticker is in user's watchlist
+// Require an authenticated user to perform this action
+func TickerInWatchlist(token, ticker string) (bool, error) {
+	// Ensure the current user is authenticated
+	client := Client.Auth.WithToken(token)
+	resp, err := client.GetUser()
+	if err != nil {
+		return false, fmt.Errorf("failed to authenticate user")
+	}
+
+	_, count, err := Client.From("watchlists").
+		Select("", "exact", false).
+		Eq("user_id", resp.User.ID.String()).
+		Eq("ticker", ticker).
+		Execute()
+	if err != nil {
+		return false, fmt.Errorf("failed to fetch user's watchlist")
+	}
+	return count > 0, nil
 }

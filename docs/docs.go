@@ -559,6 +559,27 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/watchlist/{ticker}": {
+            "get": {
+                "summary": "Check if a ticker is in user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticker symbol",
+                        "name": "ticker",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Access token",
+                        "name": "token",
+                        "in": "header"
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
