@@ -1,10 +1,10 @@
 package supabase
 
 import (
-	"strings"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/supabase-community/gotrue-go/types"
 )

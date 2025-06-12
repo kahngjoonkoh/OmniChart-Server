@@ -48,6 +48,7 @@ func SetupRouter() *gin.Engine {
 	v1.GET("/beta/:ticker", handler.GetBetaHandler)
 	v1.POST("/watchlist/add", handler.AddTickerHandler) // Add ticker to watchlist
 	v1.GET("/watchlist", handler.GetWatchlistHandler) // Get tickers in watchlist
+	v1.GET("/watchlist/:ticker", handler.TickerInWatchlistHandler)
 	v1.DELETE("/watchlist/remove", handler.RemoveTickerHandler) // Remove ticker from watchlist
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

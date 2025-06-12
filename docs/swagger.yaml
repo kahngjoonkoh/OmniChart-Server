@@ -389,6 +389,20 @@ paths:
         type: string
       responses: {}
       summary: Retrieve the tickers from current user's watchlist
+  /watchlist/{ticker}:
+    get:
+      parameters:
+      - description: Ticker symbol
+        in: path
+        name: ticker
+        required: true
+        type: string
+      - description: Access token
+        in: header
+        name: token
+        type: string
+      responses: {}
+      summary: Check if a ticker is in user's watchlist
   /watchlist/add:
     post:
       consumes:
