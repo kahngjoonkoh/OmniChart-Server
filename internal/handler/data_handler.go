@@ -13,21 +13,42 @@ import (
 
 func GetHistoricalDataHandler(c *gin.Context) {
 	ticker := strings.ToUpper(c.Param("ticker"))
-	// timeframe := c.Param("timeframe")
 
-	data, err := alpacaApi.MarketData.GetBars(ticker, marketdata.GetBarsRequest{
-		TimeFrame: marketdata.OneDay,
-		Start:     time.Now().AddDate(0, -6, 0),
-	})
+	startStr := c.Query("start")
+	endStr := c.Query("end")
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error Fetching Historical Bars."})
+	if startStr == "" || endStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing 'start' or 'end' query parameters. Use RFC3339 format."})
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
-}
+	start, err := time.Parse(time.RFC3339, startStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'start' format. Use RFC3339"})
+		return
+	}
 
-func GetLiveDataHandler(c *gin.Context) {
+	end, err := time.Parse(time.RFC3339, endStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'end' format. Use RFC3339"})
+		return
+	}
 
+	if end.Before(start) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "'end' must be after 'start'"})
+		return
+	}
+
+	// ✅ Correct API usage for v3
+	data, err := alpacaApi.MarketData.GetBars(ticker, marketdata.GetBarsRequest{
+		TimeFrame: marketdata.OneDay,
+		Start:     start,
+		End:       end,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching historical bars", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, data) // ✅ Return slice directly
 }

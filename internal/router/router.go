@@ -39,6 +39,7 @@ func SetupRouter() *gin.Engine {
 	v1.GET("/search", handler.GetSearchHandler)
 	v1.POST("/ticker_events", handler.PostTickerEventHandler)
 	v1.GET("/ticker_events/:ticker", handler.GetTickerEventsHandler)
+	// Route: GET /bar/:ticker?start=...&end=...
 	v1.GET("/bars/:ticker", handler.GetHistoricalDataHandler)
 	// v1.GET("/bars/:ticker", handler.GetLiveDataHandler)
 	v1.POST("/signup", handler.SignUpHandler) // User sign up
