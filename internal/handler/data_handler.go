@@ -92,16 +92,6 @@ func GetHistoricalDataHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("✅ Got %d splits\n", len(splits))
-
-
-	fmt.Println("==== SPLIT DEBUG START ====")
-	for _, split := range splits {
-		fmt.Printf("Effective Date: %s | Ratio: %.2f\n", split.EffectiveDate, split.Ratio)
-	}
-	fmt.Println("==== SPLIT DEBUG END ====")
-
-
 	// Apply split adjustments
 	for i := range bars {
 		barTime := bars[i].Timestamp
