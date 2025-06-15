@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/supabase-community/gotrue-go/types"
 )
 
@@ -90,4 +91,29 @@ func LoginUser(username, password string) (string, string, error) {
 // Logout a user
 func LogoutUser() error {
 	return Client.Auth.Logout()
+}
+
+type UsernameResp struct {
+	Username	string	`json:"username"`
+}
+
+// Fetch the username with user id
+func GetUsername(userId uuid.UUID) (string, error) {
+	// Make query of username
+	resp, _, err := Client.From("profiles").
+		Select("username", "", false).
+		Eq("id", userId.String()).
+		Single().
+		Execute()
+	if err != nil {
+		return "", err
+	}
+
+	// Extract username from response
+	var data UsernameResp
+	err = json.Unmarshal(resp, &data)
+	if err != nil {
+		return "", err
+	}
+	return data.Username, nil
 }

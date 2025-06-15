@@ -4,11 +4,10 @@ definitions:
       content:
         example: This drop makes sense after Q2 miss.
         type: string
+      sentiment:
+        type: string
       ticker_event_id:
         example: drop1
-        type: string
-      user_id:
-        example: d290f1ee-6c54-4b01-90e6-d701748f0851
         type: string
     type: object
   handler.PostTickerEventRequest:
@@ -33,6 +32,8 @@ definitions:
       created_at:
         type: string
       id:
+        type: string
+      sentiment:
         type: string
       ticker_event_id:
         description: Check ticker and event to get proper comment seciton
@@ -225,6 +226,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/handler.PostCommentRequest'
+      - description: Authorization header
+        in: header
+        name: Authorization
+        type: string
       produces:
       - application/json
       responses:

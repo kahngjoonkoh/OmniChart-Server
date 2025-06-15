@@ -199,6 +199,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/handler.PostCommentRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization header",
+                        "name": "Authorization",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -590,13 +596,12 @@ const docTemplate = `{
                     "type": "string",
                     "example": "This drop makes sense after Q2 miss."
                 },
+                "sentiment": {
+                    "type": "string"
+                },
                 "ticker_event_id": {
                     "type": "string",
                     "example": "drop1"
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
                 }
             }
         },
@@ -631,6 +636,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "sentiment": {
                     "type": "string"
                 },
                 "ticker_event_id": {

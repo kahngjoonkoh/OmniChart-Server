@@ -3,16 +3,18 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"omnichart-server/internal/supabase"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // PostCommentRequest defines the JSON body for POST /api/v1/comments
 type PostCommentRequest struct {
 	TickerEventID string `json:"ticker_event_id" example:"drop1"`
-	UserID        string `json:"user_id" example:"d290f1ee-6c54-4b01-90e6-d701748f0851"`
 	Content       string `json:"content" example:"This drop makes sense after Q2 miss."`
+	Sentiment	  string `json:"sentiment"`
 }
 
 // @Summary      Add a new comment
@@ -21,20 +23,28 @@ type PostCommentRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        comment  body      PostCommentRequest  true  "Comment payload"
+// @Param		 Authorization	  header	string		false "Authorization header"
 // @Success      200      {object}  models.Comment
 // @Failure      400      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
 // @Router       /comments [post]
 func PostCommentHandler(c *gin.Context) {
+	// Extract access token from header
+	token, err := GetAccessToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid authorization token"})
+		return
+	}
+
 	var req PostCommentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
-	comment, err := supabase.AddComment(req.TickerEventID, req.UserID, req.Content)
+	comment, err := supabase.AddComment(token, req.TickerEventID, req.Content, req.Sentiment)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "failed to post comment",
 			"details": err.Error(), // optional, remove in production
 		})
@@ -61,7 +71,14 @@ func GetCommentsHandler(c *gin.Context) {
 		return
 	}
 
-	comments, err := supabase.GetComments(tickerEventID)
+	sentiment := c.Query("sentiment")
+	ascending, err := strconv.ParseBool(c.Query("ascending"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ascending must be either true or false"})
+		return
+	}
+
+	comments, err := supabase.GetComments(tickerEventID, sentiment, ascending)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch comments"})
 		return
