@@ -103,7 +103,7 @@ func GetEventsHandler(c *gin.Context) {
 
 	summarizedEvent := models.Event{
 		ID:           uuid.New(),
-		Timestamp:    time.Now().UTC(),
+		Timestamp:    recentEvent.CreatedAt,
 		Title:        title,
 		SourceUrl:    recentEvent.URL,
 		Content:      strings.Join(bullets, "\n"), // or use JSON if you prefer bullet structure
