@@ -8,5 +8,5 @@ type TickerEvent struct {
 	EventId    uuid.UUID `json:"event_id"`
 	StartIndex int       `json:"start_index"`
 	EndIndex   int       `json:"end_index"`
-	Event      *Event    `json:"events"` // optional: populated if joined
+	Event      *Event    `json:"events,omitempty"` // optional: populated if joined
 }

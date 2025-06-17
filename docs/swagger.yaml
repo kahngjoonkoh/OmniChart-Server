@@ -74,6 +74,8 @@ definitions:
     type: object
   models.Ticker:
     properties:
+      lastUpdated:
+        type: string
       name:
         type: string
       ticker:
@@ -297,21 +299,11 @@ paths:
         name: ticker
         required: true
         type: string
-      - description: Start time in RFC3339 format
+      - description: timeframe of events to fetch in days
         in: query
         name: from
         required: true
         type: string
-      - description: End time in RFC3339 format
-        in: query
-        name: to
-        required: true
-        type: string
-      - description: Maximum number of events to return
-        in: query
-        name: limit
-        required: true
-        type: integer
       responses:
         "200":
           description: OK

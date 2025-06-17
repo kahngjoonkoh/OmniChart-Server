@@ -304,22 +304,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Start time in RFC3339 format",
+                        "description": "timeframe of events to fetch in days",
                         "name": "from",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "End time in RFC3339 format",
-                        "name": "to",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Maximum number of events to return",
-                        "name": "limit",
                         "in": "query",
                         "required": true
                     }
@@ -724,6 +710,9 @@ const docTemplate = `{
         "models.Ticker": {
             "type": "object",
             "properties": {
+                "lastUpdated": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
