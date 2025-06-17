@@ -11,6 +11,7 @@ import (
 )
 
 // @Summary Sign up a new user account
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param signup body object true "Username, email and password"
@@ -40,6 +41,7 @@ func SignUpHandler(c *gin.Context) {
 }
 
 // @Summary Login a user
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param login body object true "Username and password"
@@ -68,6 +70,7 @@ func LoginHandler(c *gin.Context) {
 }
 
 // @Summary Log out a user
+// @Tags auth
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router /logout [post]

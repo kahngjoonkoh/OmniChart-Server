@@ -290,6 +290,9 @@ const docTemplate = `{
         },
         "/events/{event_id}": {
             "get": {
+                "tags": [
+                    "event"
+                ],
                 "summary": "Gets events for a given ticker and timeframe",
                 "parameters": [
                     {
@@ -349,6 +352,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Login a user",
                 "parameters": [
                     {
@@ -385,6 +391,9 @@ const docTemplate = `{
             "post": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "auth"
                 ],
                 "summary": "Log out a user",
                 "responses": {
@@ -462,6 +471,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "auth"
+                ],
                 "summary": "Sign up a new user account",
                 "parameters": [
                     {
@@ -496,6 +508,9 @@ const docTemplate = `{
         },
         "/watchlist": {
             "get": {
+                "tags": [
+                    "watchlist"
+                ],
                 "summary": "Retrieve the tickers from current user's watchlist",
                 "parameters": [
                     {
@@ -515,6 +530,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "watchlist"
                 ],
                 "summary": "Add a new ticker to current user's watchlist",
                 "parameters": [
@@ -545,6 +563,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "watchlist"
+                ],
                 "summary": "Add a new ticker to current user's watchlist",
                 "parameters": [
                     {
@@ -568,6 +589,9 @@ const docTemplate = `{
         },
         "/watchlist/{ticker}": {
             "get": {
+                "tags": [
+                    "watchlist"
+                ],
                 "summary": "Check if a ticker is in user's watchlist",
                 "parameters": [
                     {
@@ -646,6 +670,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

@@ -10,6 +10,7 @@ import (
 )
 
 // @Summary Add a new ticker to current user's watchlist
+// @Tags watchlist
 // @Accept json
 // @Produce json
 // @Param ticker body object true "Ticker"
@@ -40,6 +41,7 @@ func AddTickerHandler(c *gin.Context) {
 }
 
 // @Summary Retrieve the tickers from current user's watchlist
+// @Tags watchlist
 // @Param token header string false "Access token"
 // @Router /watchlist [get]
 func GetWatchlistHandler(c *gin.Context) {
@@ -62,6 +64,7 @@ func GetWatchlistHandler(c *gin.Context) {
 }
 
 // @Summary Add a new ticker to current user's watchlist
+// @Tags watchlist
 // @Accept json
 // @Produce json
 // @Param ticker body object true "Ticker"
@@ -92,6 +95,7 @@ func RemoveTickerHandler(c *gin.Context) {
 }
 
 // @Summary Check if a ticker is in user's watchlist
+// @Tags watchlist
 // @Param ticker path string true "Ticker symbol"
 // @Param token header string false "Access token"
 // @Router /watchlist/{ticker} [get]

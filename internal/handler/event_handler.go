@@ -11,6 +11,7 @@ import (
 
 // GetEventsHandler godoc
 // @Summary Gets events for a given ticker and timeframe
+// @Tags event
 // @Param ticker path string true "Ticker symbol"
 // @Param from query string true "Start time in RFC3339 format"
 // @Param to query string true "End time in RFC3339 format"

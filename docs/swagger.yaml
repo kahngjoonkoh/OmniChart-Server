@@ -40,6 +40,8 @@ definitions:
         type: string
       user_id:
         type: string
+      username:
+        type: string
     type: object
   models.Event:
     properties:
@@ -323,6 +325,8 @@ paths:
             additionalProperties: true
             type: object
       summary: Gets events for a given ticker and timeframe
+      tags:
+      - event
   /login:
     post:
       consumes:
@@ -349,6 +353,8 @@ paths:
             additionalProperties: true
             type: object
       summary: Login a user
+      tags:
+      - auth
   /logout:
     post:
       produces:
@@ -360,6 +366,8 @@ paths:
             additionalProperties: true
             type: object
       summary: Log out a user
+      tags:
+      - auth
   /search:
     get:
       consumes:
@@ -424,6 +432,8 @@ paths:
             additionalProperties: true
             type: object
       summary: Sign up a new user account
+      tags:
+      - auth
   /watchlist:
     get:
       parameters:
@@ -433,6 +443,8 @@ paths:
         type: string
       responses: {}
       summary: Retrieve the tickers from current user's watchlist
+      tags:
+      - watchlist
   /watchlist/{ticker}:
     get:
       parameters:
@@ -447,6 +459,8 @@ paths:
         type: string
       responses: {}
       summary: Check if a ticker is in user's watchlist
+      tags:
+      - watchlist
   /watchlist/add:
     post:
       consumes:
@@ -466,6 +480,8 @@ paths:
       - application/json
       responses: {}
       summary: Add a new ticker to current user's watchlist
+      tags:
+      - watchlist
   /watchlist/remove:
     delete:
       consumes:
@@ -485,4 +501,6 @@ paths:
       - application/json
       responses: {}
       summary: Add a new ticker to current user's watchlist
+      tags:
+      - watchlist
 swagger: "2.0"
