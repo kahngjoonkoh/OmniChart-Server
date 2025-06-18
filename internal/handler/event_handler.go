@@ -96,7 +96,7 @@ func GetEventsHandler(c *gin.Context) {
 	}
 	log.Println(res)
 
-	res2, err2 := alpacaApi.MarketData.GetNews(marketdata.GetNewsRequest{Symbols: []string{ticker}, Start: time.Now().AddDate(0, 0, -timeframe*3), TotalLimit: 5})
+	res2, err2 := alpacaApi.MarketData.GetNews(marketdata.GetNewsRequest{Symbols: []string{ticker}, Start: time.Now().AddDate(0, 0, -timeframe*3), TotalLimit: 1})
 	if err2 != nil {
 		log.Println(err2)
 	}
