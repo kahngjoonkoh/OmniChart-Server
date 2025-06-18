@@ -37,6 +37,36 @@ func parseSummaryText(rawText string) (string, []string) {
 	return title, bullets
 }
 
+func SummarizeWithAI(headline string, url string) (string, []string) {
+	client := anthropic.NewClient()
+
+	content := anthropic.ContentBlockParamUnion{
+		OfText: &anthropic.TextBlockParam{
+			Type: "text",
+			Text: "Summarize the following article from a url into max 3 key summary sentences and a summarized title. " +
+				"Do not include any redundant system phrases. the headline and summary sentences should not be questions" +
+				"Have the title and each bullet point separated by one newline and nothing else: " + headline + " " + url,
+		},
+	}
+
+	message, err := client.Messages.New(context.TODO(), anthropic.MessageNewParams{
+		MaxTokens: 1024,
+		Messages: []anthropic.MessageParam{
+			{
+				Role:    "user",
+				Content: []anthropic.ContentBlockParamUnion{content},
+			},
+		},
+		Model: anthropic.ModelClaude3_7SonnetLatest,
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	rawText := message.Content[0].Text
+	return parseSummaryText(rawText)
+}
+
 // GetEventsHandler godoc
 // @Summary Gets events for a given ticker and timeframe
 // @Tags event
@@ -66,69 +96,53 @@ func GetEventsHandler(c *gin.Context) {
 	}
 	log.Println(res)
 
-	res2, err2 := alpacaApi.MarketData.GetNews(marketdata.GetNewsRequest{Symbols: []string{ticker}, Start: time.Now().AddDate(0, 0, -timeframe*3), TotalLimit: 3})
+	res2, err2 := alpacaApi.MarketData.GetNews(marketdata.GetNewsRequest{Symbols: []string{ticker}, Start: time.Now().AddDate(0, 0, -timeframe*3), TotalLimit: 5})
 	if err2 != nil {
 		log.Println(err2)
 	}
-	// log.Println(res2[0].URL)
-	recentEvent := res2[0]
-
-	client := anthropic.NewClient()
-
-	content := anthropic.ContentBlockParamUnion{
-		OfText: &anthropic.TextBlockParam{
-			Type: "text",
-			Text: "Summarize the following article from a url into max 3 key summary sentences and a summarized title. " +
-				"Do not include any redundant system phrases. the headline and summary sentences should not be questions" +
-				"Have the title and each bullet point separated by one newline and nothing else: " + recentEvent.Headline + " " + recentEvent.URL,
-		},
-	}
-
-	message, err := client.Messages.New(context.TODO(), anthropic.MessageNewParams{
-		MaxTokens: 1024,
-		Messages: []anthropic.MessageParam{
-			{
-				Role:    "user",
-				Content: []anthropic.ContentBlockParamUnion{content},
-			},
-		},
-		Model: anthropic.ModelClaude3_7SonnetLatest,
-	})
-	if err != nil {
-		panic(err.Error())
-	}
-
-	rawText := message.Content[0].Text
-	title, bullets := parseSummaryText(rawText)
-
-	summarizedEvent := models.Event{
-		ID:           uuid.New(),
-		Timestamp:    recentEvent.CreatedAt,
-		Title:        title,
-		SourceUrl:    recentEvent.URL,
-		Content:      strings.Join(bullets, "\n"), // or use JSON if you prefer bullet structure
-		EventTypesID: 19, // AI_generated Events
-	}
-
-	if _, _, err := supabase.Client.From("events").Insert(summarizedEvent, false, "representation", "", "").Execute(); err != nil {
-		log.Println("Error inserting event:", err)
+	if len(res2) == 0 {
+		c.JSON(http.StatusOK, []models.TickerEvent{})
 		return
 	}
 
-	summarizedTickerEvent := models.TickerEvent{
-		ID:         uuid.New(),
-		Ticker:     ticker,
-		EventId:    summarizedEvent.ID,
-		StartIndex: 0,
-		EndIndex:   0,
+	eventList := []models.TickerEvent{}
+
+	for _, event := range res2 {
+		title, bullets := SummarizeWithAI(event.Headline, event.URL)
+
+		summarizedEvent := models.Event{
+			ID:           uuid.New(),
+			Timestamp:    event.CreatedAt,
+			Title:        title,
+			SourceUrl:    event.URL,
+			Content:      strings.Join(bullets, "\n"), // or use JSON if you prefer bullet structure
+			EventTypesID: 19,                          // AI_generated Events
+		}
+
+		if _, _, err := supabase.Client.From("events").Insert(summarizedEvent, false, "representation", "", "").Execute(); err != nil {
+			log.Println("Error inserting event:", err)
+			return
+		}
+
+		summarizedTickerEvent := models.TickerEvent{
+			ID:         uuid.New(),
+			Ticker:     ticker,
+			EventId:    summarizedEvent.ID,
+			StartIndex: 0,
+			EndIndex:   0,
+		}
+
+		if _, _, err := supabase.Client.From("ticker_event").Insert(summarizedTickerEvent, false, "representation", "", "").Execute(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting ticker_event"})
+			return
+		}
+		copiedEvent := summarizedEvent
+		summarizedTickerEvent.Event = &copiedEvent
+
+		copiedTickerEvent := summarizedTickerEvent
+
+		eventList = append(eventList, copiedTickerEvent)
 	}
 
-	if _, _, err := supabase.Client.From("ticker_event").Insert(summarizedTickerEvent, false, "representation", "", "").Execute(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting ticker_event"})
-		return
-	}
-	
-	summarizedTickerEvent.Event = &summarizedEvent
-
-	c.JSON(http.StatusOK, []models.TickerEvent{summarizedTickerEvent})
+	c.JSON(http.StatusOK, eventList)
 }
