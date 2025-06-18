@@ -53,22 +53,23 @@ func GetSearchHandler(c *gin.Context) {
 		asset, err := alpacaApi.Client.GetAsset(query)
 		if err != nil {
 			log.Println(err, asset)
+		} else {
+			log.Println(asset)
+
+			newTicker := models.Ticker{
+				Ticker: asset.Symbol,
+				Name:   asset.Name,
+			}
+
+			if _, _, err := supabase.Client.From("tickers").Insert(newTicker, false, "representation", "", "").Execute(); err != nil {
+				log.Println("Error inserting ticker:", err)
+				return
+			}
+
+			log.Println("Ticker inserted successfully")
+
+			tickers = append(tickers, newTicker)
 		}
-		log.Println(asset)
-
-		newTicker := models.Ticker{
-			Ticker: asset.Symbol,
-			Name:   asset.Name,
-		}
-
-		if _, _, err := supabase.Client.From("tickers").Insert(newTicker, false, "representation", "", "").Execute(); err != nil {
-			log.Println("Error inserting ticker:", err)
-			return
-		}
-
-		log.Println("Ticker inserted successfully")
-
-		tickers = append(tickers, newTicker)
 	}
 
 	filteredStocks := make([]models.Ticker, 0)
@@ -88,10 +89,29 @@ func GetSearchHandler(c *gin.Context) {
 			filteredStocks = append(filteredStocks, ticker)
 		}
 	}
+	
+	var events = []models.Event{}
+	if len(query) > 4 {
+	// Events
+		data, _, err = supabase.Client.From("events").
+			Select("*", "", false).
+			Or(fmt.Sprintf("title.ilike.*%s*,content.ilike.*%s*", query, query), "").
+			Execute()
+		
+			if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch from DB", "detail": err.Error()})
+			return
+		}
+
+		if err := json.Unmarshal(data, &events); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unmarshal Error. Received incorrect datatype"})
+			return
+		}
+	}
 
 	results := map[string]interface{}{
 		"stocks": filteredStocks,
-		// "events": filteredEvents,
+		"events": events,
 		// "others": filteredOthers,
 	}
 
